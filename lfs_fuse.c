@@ -89,18 +89,12 @@ void lfs_fuse_destroy(void *eh) {
     lfs_fuse_bd_destroy(&config);
 }
 
-static int lfs_fuse_statfs_count(void *p, lfs_block_t b) {
-    *(lfs_size_t *)p += 1;
-    return 0;
-}
-
 int lfs_fuse_statfs(const char *path, struct statvfs *s) {
     memset(s, 0, sizeof(struct statvfs));
 
-    lfs_size_t in_use = 0;
-    int err = lfs_traverse(&lfs, lfs_fuse_statfs_count, &in_use);
-    if (err) {
-        return err;
+    lfs_ssize_t in_use = lfs_fs_size(&lfs);
+    if (in_use < 0) {
+        return in_use;
     }
 
     s->f_bsize = config.block_size;

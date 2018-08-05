@@ -73,7 +73,7 @@ lfs_mktree
 lfs_chktree
 
 echo "--- Block corruption ---"
-for i in {0..33}
+for i in {2..33}
 do 
     rm -rf blocks
     mkdir blocks
@@ -83,12 +83,12 @@ do
 done
 
 echo "--- Block persistance ---"
-for i in {0..33}
+for i in {2..33}
 do 
     rm -rf blocks
     mkdir blocks
     lfs_mktree
-    chmod a-w blocks/$(printf '%x' $i)
+    chmod a-w blocks/$(printf '%x' $i) || true
     lfs_mktree
     lfs_chktree
 done

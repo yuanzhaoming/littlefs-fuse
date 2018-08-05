@@ -90,6 +90,22 @@ tests/test.py << TEST
     lfs_unmount(&lfs) => 0;
 TEST
 
+echo "--- Trailing dot path tests ---"
+tests/test.py << TEST
+    lfs_mount(&lfs, &cfg) => 0;
+    lfs_stat(&lfs, "tea/hottea/", &info) => 0;
+    strcmp(info.name, "hottea") => 0;
+    lfs_stat(&lfs, "tea/hottea/.", &info) => 0;
+    strcmp(info.name, "hottea") => 0;
+    lfs_stat(&lfs, "tea/hottea/./.", &info) => 0;
+    strcmp(info.name, "hottea") => 0;
+    lfs_stat(&lfs, "tea/hottea/..", &info) => 0;
+    strcmp(info.name, "tea") => 0;
+    lfs_stat(&lfs, "tea/hottea/../.", &info) => 0;
+    strcmp(info.name, "tea") => 0;
+    lfs_unmount(&lfs) => 0;
+TEST
+
 echo "--- Root dot dot path tests ---"
 tests/test.py << TEST
     lfs_mount(&lfs, &cfg) => 0;
@@ -108,6 +124,10 @@ tests/test.py << TEST
     lfs_stat(&lfs, "/", &info) => 0;
     info.type => LFS_TYPE_DIR;
     strcmp(info.name, "/") => 0;
+
+    lfs_mkdir(&lfs, "/") => LFS_ERR_EXIST;
+    lfs_file_open(&lfs, &file[0], "/", LFS_O_WRONLY | LFS_O_CREAT)
+        => LFS_ERR_ISDIR;
     lfs_unmount(&lfs) => 0;
 TEST
 
@@ -116,6 +136,24 @@ tests/test.py << TEST
     lfs_mount(&lfs, &cfg) => 0;
     lfs_mkdir(&lfs, "dirt/ground") => LFS_ERR_NOENT;
     lfs_mkdir(&lfs, "dirt/ground/earth") => LFS_ERR_NOENT;
+    lfs_unmount(&lfs) => 0;
+TEST
+
+echo "--- Max path test ---"
+tests/test.py << TEST
+    lfs_mount(&lfs, &cfg) => 0;
+    memset(buffer, 'w', LFS_NAME_MAX+1);
+    buffer[LFS_NAME_MAX+2] = '\0';
+    lfs_mkdir(&lfs, (char*)buffer) => LFS_ERR_NAMETOOLONG;
+    lfs_file_open(&lfs, &file[0], (char*)buffer,
+            LFS_O_WRONLY | LFS_O_CREAT) => LFS_ERR_NAMETOOLONG;
+
+    memcpy(buffer, "coffee/", strlen("coffee/"));
+    memset(buffer+strlen("coffee/"), 'w', LFS_NAME_MAX+1);
+    buffer[strlen("coffee/")+LFS_NAME_MAX+2] = '\0';
+    lfs_mkdir(&lfs, (char*)buffer) => LFS_ERR_NAMETOOLONG;
+    lfs_file_open(&lfs, &file[0], (char*)buffer,
+            LFS_O_WRONLY | LFS_O_CREAT) => LFS_ERR_NAMETOOLONG;
     lfs_unmount(&lfs) => 0;
 TEST
 
