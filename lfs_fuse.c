@@ -52,16 +52,16 @@ void lfs_fuse_defaults(struct lfs_config *config) {
         config->cache_size = config->block_size;
     }
 
-    if (!config->attr_size) {
-        config->attr_size = LFS_ATTR_MAX;
+    if (!config->attr_max) {
+        config->attr_max = LFS_ATTR_MAX;
     }
 
-    if (!config->name_size) {
-        config->name_size = 255;
+    if (!config->name_max) {
+        config->name_max = 255;
     }
 
-    if (!config->inline_size) {
-        config->inline_size = 255;
+    if (!config->inline_max) {
+        config->inline_max = 255;
     }
 }
 
@@ -118,7 +118,7 @@ int lfs_fuse_statfs(const char *path, struct statvfs *s) {
     s->f_blocks = config.block_count;
     s->f_bfree = config.block_count - in_use;
     s->f_bavail = config.block_count - in_use;
-    s->f_namemax = config.name_size;
+    s->f_namemax = config.name_max;
 
     return 0;
 }
@@ -395,9 +395,9 @@ static struct fuse_opt lfs_fuse_opts[] = {
     OPT("--prog_size=%"   SCNu32, prog_size),
     OPT("--cache_size=%"  SCNu32, cache_size),
     OPT("--lookahead=%"   SCNu32, lookahead),
-    OPT("--attr_size=%"   SCNu32, attr_size),
-    OPT("--name_size=%"   SCNu32, name_size),
-    OPT("--inline_size=%" SCNu32, inline_size),
+    OPT("--attr_max=%"    SCNu32, attr_max),
+    OPT("--name_max=%"    SCNu32, name_max),
+    OPT("--inline_max=%"  SCNu32, inline_max),
     FUSE_OPT_KEY("-V",          KEY_VERSION),
     FUSE_OPT_KEY("--version",   KEY_VERSION),
     FUSE_OPT_KEY("-h",          KEY_HELP),
@@ -421,9 +421,9 @@ static const char help_text[] =
 "    --prog_size            programmable unit (block_size)\n"
 "    --cache_size           size of caches (block_size)\n"
 "    --lookahead            size of lookahead buffer (8192)\n"
-"    --attr_size            max size of attributes (4095)\n"
-"    --name_size            max size of file names (255)\n"
-"    --inline_size          max size of inline files (255)\n"
+"    --attr_max             max size of attributes (4095)\n"
+"    --name_max             max size of file names (255)\n"
+"    --inline_max           max size of inline files (255)\n"
 "\n";
 
 int lfs_fuse_opt_proc(void *data, const char *arg,
