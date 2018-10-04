@@ -59,7 +59,7 @@ tests/test.py << TEST
     lfs_rename(&lfs, "b/hello", "c/hello") => 0;
     lfs_unmount(&lfs) => 0;
 TEST
-tests/corrupt.py blocks/{6,7}
+tests/corrupt.py -n 1
 tests/test.py << TEST
     lfs_mount(&lfs, &cfg) => 0;
     lfs_dir_open(&lfs, &dir[0], "b") => 0;
@@ -86,8 +86,7 @@ tests/test.py << TEST
     lfs_rename(&lfs, "c/hello", "d/hello") => 0;
     lfs_unmount(&lfs) => 0;
 TEST
-tests/corrupt.py blocks/{8,9}
-tests/corrupt.py blocks/{a,b}
+tests/corrupt.py -n 2
 tests/test.py << TEST
     lfs_mount(&lfs, &cfg) => 0;
     lfs_dir_open(&lfs, &dir[0], "c") => 0;
@@ -166,7 +165,7 @@ tests/test.py << TEST
     lfs_rename(&lfs, "b/hi", "c/hi") => 0;
     lfs_unmount(&lfs) => 0;
 TEST
-tests/corrupt.py blocks/{6,7}
+tests/corrupt.py -n 1
 tests/test.py << TEST
     lfs_mount(&lfs, &cfg) => 0;
     lfs_dir_open(&lfs, &dir[0], "b") => 0;
@@ -193,8 +192,7 @@ tests/test.py << TEST
     lfs_rename(&lfs, "c/hi", "d/hi") => 0;
     lfs_unmount(&lfs) => 0;
 TEST
-tests/corrupt.py blocks/{8,9}
-tests/corrupt.py blocks/{a,b}
+tests/corrupt.py -n 2
 tests/test.py << TEST
     lfs_mount(&lfs, &cfg) => 0;
     lfs_dir_open(&lfs, &dir[0], "c") => 0;
@@ -259,9 +257,9 @@ tests/test.py << TEST
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "..") => 0;
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
-    strcmp(info.name, "hola") => 0;
-    lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "bonjour") => 0;
+    lfs_dir_read(&lfs, &dir[0], &info) => 1;
+    strcmp(info.name, "hola") => 0;
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "ohayo") => 0;
     lfs_dir_read(&lfs, &dir[0], &info) => 0;
@@ -305,9 +303,9 @@ tests/test.py << TEST
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "..") => 0;
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
-    strcmp(info.name, "hola") => 0;
-    lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "bonjour") => 0;
+    lfs_dir_read(&lfs, &dir[0], &info) => 1;
+    strcmp(info.name, "hola") => 0;
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "ohayo") => 0;
     lfs_dir_read(&lfs, &dir[0], &info) => 0;

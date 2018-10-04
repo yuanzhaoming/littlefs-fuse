@@ -29,8 +29,8 @@ tests/test.py << TEST
 TEST
 
 w_test() {
-tests/test.py << TEST
-    lfs_size_t size = $1;
+tests/test.py ${4:-} << TEST
+    size = $1;
     lfs_size_t chunk = 31;
     srand(0);
     lfs_mount(&lfs, &cfg) => 0;
@@ -50,7 +50,7 @@ TEST
 
 r_test() {
 tests/test.py << TEST
-    lfs_size_t size = $1;
+    size = $1;
     lfs_size_t chunk = 29;
     srand(0);
     lfs_mount(&lfs, &cfg) => 0;
@@ -115,21 +115,21 @@ tests/test.py << TEST
     info.type => LFS_TYPE_REG;
     info.size => strlen("Hello World!\n");
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
-    strcmp(info.name, "smallavacado") => 0;
+    strcmp(info.name, "largeavacado") => 0;
     info.type => LFS_TYPE_REG;
-    info.size => $SMALLSIZE;
+    info.size => $LARGESIZE;
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "mediumavacado") => 0;
     info.type => LFS_TYPE_REG;
     info.size => $MEDIUMSIZE;
     lfs_dir_read(&lfs, &dir[0], &info) => 1;
-    strcmp(info.name, "largeavacado") => 0;
-    info.type => LFS_TYPE_REG;
-    info.size => $LARGESIZE;
-    lfs_dir_read(&lfs, &dir[0], &info) => 1;
     strcmp(info.name, "noavacado") => 0;
     info.type => LFS_TYPE_REG;
     info.size => 0;
+    lfs_dir_read(&lfs, &dir[0], &info) => 1;
+    strcmp(info.name, "smallavacado") => 0;
+    info.type => LFS_TYPE_REG;
+    info.size => $SMALLSIZE;
     lfs_dir_read(&lfs, &dir[0], &info) => 0;
     lfs_dir_close(&lfs, &dir[0]) => 0;
     lfs_unmount(&lfs) => 0;
