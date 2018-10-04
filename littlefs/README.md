@@ -49,7 +49,8 @@ const struct lfs_config cfg = {
     .prog_size = 16,
     .block_size = 4096,
     .block_count = 128,
-    .lookahead = 128,
+    .cache_size = 16,
+    .lookahead_size = 16,
 };
 
 // entry point
@@ -145,6 +146,19 @@ The tests assume a Linux environment and can be started with make:
 ``` bash
 make test
 ```
+
+## License
+
+The littlefs is provided under the [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause.html)
+license. See [LICENSE.md](LICENSE.md) for more information. Contributions to
+this project are accepted under the same license.
+
+Individual files contain the following tag instead of the full license text.
+
+    SPDX-License-Identifier:    BSD-3-Clause
+
+This enables machine processing of license information based on the SPDX
+License Identifiers that are here available: http://spdx.org/licenses/
 
 ## Related projects
 

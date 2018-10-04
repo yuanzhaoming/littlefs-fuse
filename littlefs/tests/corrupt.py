@@ -3,37 +3,42 @@
 import struct
 import sys
 import os
+import argparse
 
-def main(*paths):
-    # find most recent block
-    file = None
-    rev = None
-    for path in paths:
-        try:
-            nfile = open(path, 'r+b')
-            nrev, = struct.unpack('<I', nfile.read(4))
+def corrupt(block):
+    with open(block, 'r+b') as file:
+        # skip rev
+        file.read(4)
 
-            assert rev != nrev
-            if not file or ((rev - nrev) & 0x80000000):
-                file = nfile
-                rev = nrev
-        except IOError:
-            pass
+        # go to last commit
+        tag = 0
+        while True:
+            try:
+                ntag, = struct.unpack('<I', file.read(4))
+            except struct.error:
+                break
 
-    # go to last commit
-    tag = 0
-    while True:
-        try:
-            ntag, = struct.unpack('<I', file.read(4))
-        except struct.error:
-            break
+            tag ^= ntag
+            size = (tag & 0x1fff) if (tag & 0x1fff) != 0x1fff else 0
+            file.seek(size, os.SEEK_CUR)
 
-        tag ^= ntag
-        file.seek(tag & 0xfff, os.SEEK_CUR)
+        # lob off last 3 bytes
+        file.seek(-(size + 3), os.SEEK_CUR)
+        file.truncate()
 
-    # lob off last 3 bytes
-    file.seek(-((tag & 0xfff) + 3), os.SEEK_CUR)
-    file.truncate()
+def main(args):
+    if args.n or not args.blocks:
+        with open('blocks/.history', 'rb') as file:
+            for i in range(int(args.n or 1)):
+                last, = struct.unpack('<I', file.read(4))
+                args.blocks.append('blocks/%x' % last)
+
+    for block in args.blocks:
+        print 'corrupting %s' % block
+        corrupt(block)
 
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n')
+    parser.add_argument('blocks', nargs='*')
+    main(parser.parse_args())
