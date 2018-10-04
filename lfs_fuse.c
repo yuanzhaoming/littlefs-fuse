@@ -36,11 +36,7 @@ static lfs_t lfs;
 void lfs_fuse_defaults(struct lfs_config *config) {
     // defaults, ram is less of a concern here than what
     // littlefs is used to, so these may end up a bit funny
-    if (!config->lookahead) {
-        config->lookahead = 8192;
-    }
-
-    if (!config->prog_size) {
+        if (!config->prog_size) {
         config->prog_size = config->block_size;
     }
 
@@ -50,6 +46,10 @@ void lfs_fuse_defaults(struct lfs_config *config) {
 
     if (!config->cache_size) {
         config->cache_size = config->block_size;
+    }
+
+    if (!config->lookahead_size) {
+        config->lookahead_size = 8192;
     }
 
     if (!config->attr_max) {
@@ -388,16 +388,16 @@ enum lfs_fuse_keys {
 #define OPT(t, p) { t, offsetof(struct lfs_config, p), 0}
 static struct fuse_opt lfs_fuse_opts[] = {
     FUSE_OPT_KEY("--format",    KEY_FORMAT),
-    OPT("-b=%"            SCNu32, block_size),
-    OPT("--block_size=%"  SCNu32, block_size),
-    OPT("--block_count=%" SCNu32, block_count),
-    OPT("--read_size=%"   SCNu32, read_size),
-    OPT("--prog_size=%"   SCNu32, prog_size),
-    OPT("--cache_size=%"  SCNu32, cache_size),
-    OPT("--lookahead=%"   SCNu32, lookahead),
-    OPT("--attr_max=%"    SCNu32, attr_max),
-    OPT("--name_max=%"    SCNu32, name_max),
-    OPT("--inline_max=%"  SCNu32, inline_max),
+    OPT("-b=%"                  SCNu32, block_size),
+    OPT("--block_size=%"        SCNu32, block_size),
+    OPT("--block_count=%"       SCNu32, block_count),
+    OPT("--read_size=%"         SCNu32, read_size),
+    OPT("--prog_size=%"         SCNu32, prog_size),
+    OPT("--cache_size=%"        SCNu32, cache_size),
+    OPT("--lookahead_size=%"    SCNu32, lookahead_size),
+    OPT("--attr_max=%"          SCNu32, attr_max),
+    OPT("--name_max=%"          SCNu32, name_max),
+    OPT("--inline_max=%"        SCNu32, inline_max),
     FUSE_OPT_KEY("-V",          KEY_VERSION),
     FUSE_OPT_KEY("--version",   KEY_VERSION),
     FUSE_OPT_KEY("-h",          KEY_HELP),
@@ -420,7 +420,7 @@ static const char help_text[] =
 "    --read_size            readable unit (block_size)\n"
 "    --prog_size            programmable unit (block_size)\n"
 "    --cache_size           size of caches (block_size)\n"
-"    --lookahead            size of lookahead buffer (8192)\n"
+"    --lookahead_size       size of lookahead buffer (8192)\n"
 "    --attr_max             max size of attributes (4095)\n"
 "    --name_max             max size of file names (255)\n"
 "    --inline_max           max size of inline files (255)\n"
